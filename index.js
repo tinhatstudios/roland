@@ -7,22 +7,11 @@ const path = require('path');
 const process = require('process');
 const roland = require('./roland.json');
 
-const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'src';
+const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
 const port = roland.port ? roland.port : 3000;
 
 const dmp = new diff_match_patch();
-
-const robloxDirectories = [
-  "Workspace",
-  "ServerStorage",
-  "ServerScriptService",
-  "ReplicatedFirst",
-  "ReplicatedStorage",
-  "StarterPlayerScripts",
-  "StarterCharacterScripts",
-  "StarterGui",
-];
 
 function isInsideDirectory(filePath, directoryPath) {
   const relativePath = path.relative(directoryPath, filePath);
@@ -121,17 +110,13 @@ app.post('/patch/*', (req, res) => {
     }
 
     let dir = undefined;
-    for (const i in robloxDirectories) {
-      const robloxDir = robloxDirectories[i];
-      const testDir = path.join(watchedDir, robloxDir);
-      if (isInsideDirectory(filePath, testDir)) {
-        dir = path.relative(watchedDir, testDir);
-        break;
-      }
+    const testDir = path.join(watchedDir, rootDirectory);
+    if (isInsideDirectory(filePath, testDir)) {
+      dir = path.relative(watchedDir, testDir);
     }
 
     if (dir === undefined) {
-      res.status(500).json({error: `Could not find equivalent roblox directory for ${filePath}`});
+      res.status(500).json({error: `${filePath} is not within the root directory`});
     }
     else {
       const basename = path.basename(filePath);
@@ -161,13 +146,10 @@ app.get('/patchList', (req, res) => {
   const patchList = [];
   for (const filePath in patches) {
     let dir = undefined;
-    for (const i in robloxDirectories) {
-      const robloxDir = robloxDirectories[i];
-      const testDir = path.join(watchedDir, robloxDir);
-      if (isInsideDirectory(filePath, testDir)) {
-        dir = path.relative(watchedDir, testDir);
-        break;
-      }
+    const testDir = path.join(watchedDir, rootDirectory);
+    if (isInsideDirectory(filePath, testDir)) {
+      dir = path.relative(watchedDir, testDir);
+      break;
     }
     
     if (dir === undefined) {
