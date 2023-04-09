@@ -1,6 +1,14 @@
 # Roland
 A tool that lets you use an external text editor (VS Code, Sublime, etc.) with Roblox.
 
+## Usage
+ 1. Download Roland from a release and place it in a folder for your Roblox game.
+ 2. Make sure there is a `game` directory that Roland can see.
+ 3. Next, run Roland from the command line: `./roland` or `./roland.exe`.
+ 4. Go to Roblox Studio and install the [Roland Roblox plugin](https://www.roblox.com/library/13061056587/Roland).
+ 5. Make sure the url matches where the Roland server is listening on (it is set to the default) and press Connect.
+ 6. Once it connects, you are all set to use Roland!
+
 ## Directory Structure
 By default, Roland watches the `game` directory. Roland treats the root directory as equivalent to `game` in Roblox. Any directory contained by `game` is then treated as having an equivalent in Roblox. This means there is a 1:1 relation to the structure managed by Roland and the structure within Roblox. For example, `game/ServerStorage` would be `game.ServerStorage` in Roblox, so a file `game/ServerStorage/foo.lua` would be the ModuleScript `game.ServerStorage.foo`.
 
