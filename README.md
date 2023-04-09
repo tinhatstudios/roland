@@ -4,7 +4,7 @@ A tool that lets you use an external text editor (VS Code, Sublime, etc.) with R
 ## Directory Structure
 By default, Roland watches the `game` directory. Roland treats the root directory as equivalent to `game` in Roblox. Any directory contained by `game` is then treated as having an equivalent in Roblox. This means there is a 1:1 relation to the structure managed by Roland and the structure within Roblox. For example, `game/ServerStorage` would be `game.ServerStorage` in Roblox, so a file `game/ServerStorage/foo.lua` would be the ModuleScript `game.ServerStorage.foo`.
 
-Roland treats any object within Roblox as a directory. This means that Bar in `game/ServerStorage/Bar/foo.lua` doesn't have to be a Folder object. However, if Bar does not exist, Roland will automatically create it as a Folder object.
+Roland treats any object within Roblox as a directory. This means that Bar in `game/ServerStorage/Bar/foo.lua` doesn't have to be a Folder object. If Bar does not exist, Roland will automatically create it as a Folder object.
 
 ## Configuration
 Create a roland.json file to configure Roland:
