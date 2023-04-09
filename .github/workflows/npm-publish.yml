@@ -1,0 +1,124 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-intel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build application
+        run: npx pkg . --out-path build/
+        
+      - name: Mark executable
+        run: |
+          chmod +x ./build/roland-linux
+          chmod +x ./build/roland-macos
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: roland-intel
+          path: |
+            ./build/roland-linux
+            ./build/roland-macos
+            ./build/roland-win.exe
+  build-arm:
+    runs-on: macos-11.0-arm64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build application
+        run: npx pkg . --target macos --output roland-macos-arm --out-path build/
+        
+      - name: Mark executable
+        run: chmod +x ./build/roland-macos-arm
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: roland-arm
+          path: |
+            ./build/roland-macos-arm
+
+  release:
+    needs: [build-intel, build-arm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0
+          release_name: Release v1.0.0
+          draft: false
+          prerelease: false
+      
+      - name: Download Intel Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: roland-intel
+          path: ./
+          
+      - name: Download Arm Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: roland-arm
+          path: ./
+      
+      - name: Attach Linux Artifact
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./roland-linux
+          asset_name: roland-linux-x64
+          asset_content_type: application/octet-stream
+          
+      - name: Attach macOS Artifact
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./roland-macos
+          asset_name: roland-macos-intel-x64
+          asset_content_type: application/octet-stream
+          
+      - name: Attach macOS Arm Artifact
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./roland-macos-arm
+          asset_name: roland-macos
+          asset_content_type: application/octet-stream
+
+      - name: Attach Windows Artifact
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./roland-win.exe
+          asset_name: roland-win-x64.exe
+          asset_content_type: application/octet-stream
