@@ -16,7 +16,7 @@ jobs:
         run: npm install
       
       - name: Build application
-        run: npx pkg . --out-path build/intel/
+        run: npx pkg . --out-path build/
         
       - name: Mark executable
         run: |
