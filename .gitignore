@@ -1,6 +1,6 @@
 node_modules/**
 .vscode/**
-src/**
+game/**
 build/**
 package-lock.json
 .DS_STORE

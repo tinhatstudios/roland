@@ -15,7 +15,7 @@ const dmp = new diff_match_patch();
 
 function isInsideDirectory(filePath, directoryPath) {
   const relativePath = path.relative(directoryPath, filePath);
-  return !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+  return !relativePath.startsWith('..') && !path.isAbsolute(relativePath) && (path.basename(filePath) !== relativePath);
 }
 
 const contentsCache = {};
@@ -110,9 +110,8 @@ app.post('/patch/*', (req, res) => {
     }
 
     let dir = undefined;
-    const testDir = path.join(watchedDir, rootDirectory);
-    if (isInsideDirectory(filePath, testDir)) {
-      dir = path.relative(watchedDir, testDir);
+    if (isInsideDirectory(filePath, watchedDir)) {
+      dir = path.relative(watchedDir, path.dirname(filePath));
     }
 
     if (dir === undefined) {
@@ -146,10 +145,8 @@ app.get('/patchList', (req, res) => {
   const patchList = [];
   for (const filePath in patches) {
     let dir = undefined;
-    const testDir = path.join(watchedDir, rootDirectory);
-    if (isInsideDirectory(filePath, testDir)) {
-      dir = path.relative(watchedDir, testDir);
-      break;
+    if (isInsideDirectory(filePath, watchedDir)) {
+      dir = path.relative(watchedDir, path.dirname(filePath));
     }
     
     if (dir === undefined) {
