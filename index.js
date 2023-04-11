@@ -11,7 +11,7 @@ const roland = require('./roland.json');
 const disableRobloxLogging = roland.disableRobloxLogging;
 const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
-const port = roland.port ? roland.port : 3000;
+const port = _port ? _port : 3000;
 
 const dmp = new diff_match_patch();
 
