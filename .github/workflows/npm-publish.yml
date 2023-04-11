@@ -32,7 +32,7 @@ jobs:
             ./build/roland-macos
             ./build/roland-win.exe
   build-arm:
-    runs-on: macos-11.0-arm64
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
         run: npm install
       
       - name: Build application
-        run: npx pkg . --target macos --output roland-macos-arm --out-path build/
+        run: npx pkg . --target macos --output ./build/roland-macos-arm
         
       - name: Mark executable
         run: chmod +x ./build/roland-macos-arm
