@@ -1,15 +1,25 @@
-const chokidar = require('chokidar');
-const diff_match_patch = require('./diff-match-patch.js');
-const express = require('express');
-const fs = require('fs');
-const http = require('http');
-const path = require('path');
-const process = require('process');
-const roland = require('./roland.json');
+import * as chalk from 'chalk';
+import * as chokidar from 'chokidar';
+import diff_match_patch from './diff-match-patch.js';
+import express from 'express';
+import * as fs from 'fs';
+import * as http from 'http';
+import path from 'path';
+import process from 'process';
+// import { rootDirectory as _rootDirectory, port as _port } from './roland.json';
+const config = fs.existsSync('./roland.json') ?
+  JSON.parse(fs.readFileSync('./roland.json')) :
+  {};
 
-const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
+const _rootDirectory = config.rootDirectory;
+const _port = config.port;
+
+const disableRobloxLogging = config.disableRobloxLogging;
+
+const chalkColor = new chalk.Chalk({level: 3});
+const rootDirectory = _rootDirectory ? _rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
-const port = roland.port ? roland.port : 3000;
+const port = _port ? _port : 3000;
 
 const dmp = new diff_match_patch();
 
@@ -165,6 +175,31 @@ app.get('/patchList', (req, res) => {
 
   res.json(patchList);
 });
+
+if (!disableRobloxLogging) {
+  app.post('/log', (req, res) => {
+    for (const i in req.body) {
+      const log = req.body[i];
+      const msg = log.message;
+      const msgType = log.messageType;
+
+      if (msgType === 0) {
+        console.log(msg);
+      }
+      else if (msgType === 1) {
+        console.log(chalkColor.rgb(117, 192, 227)(msg));
+      }
+      else if (msgType === 2) {
+        console.log(chalkColor.rgb(255, 142, 60)(msg));
+      }
+      else if (msgType === 3) {
+        console.log(chalkColor.rgb(255, 68, 68)(msg));
+      }
+    }
+
+    res.status(200).send();
+  });
+}
 
 const server = http.createServer(app);
 

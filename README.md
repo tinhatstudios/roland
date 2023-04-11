@@ -22,7 +22,10 @@ Create a roland.json file to configure Roland:
   "port": 3000,
   
   // what directory Roland treats as the root directory
-  "rootDirectory": "game", 
+  "rootDirectory": "game",
+
+  // disable logging messages from Roblox
+  "disableRobloxLogging": false
 }
 ```
 
