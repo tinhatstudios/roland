@@ -8,10 +8,11 @@ const process = require('process');
 const chalk = require('chalk');
 const roland = require('./roland.json');
 
+const VERSION = '1.0.1';
 const disableRobloxLogging = roland.disableRobloxLogging;
 const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
-const port = _port ? _port : 3000;
+const port = roland.port ? roland.port : 3000;
 
 const dmp = new diff_match_patch();
 
@@ -196,5 +197,6 @@ if (!disableRobloxLogging) {
 const server = http.createServer(app);
 
 server.listen(port, () => {
+  console.log(`Roland v${VERSION}`);
   console.log(`Server listening on port ${port}`);
 });
