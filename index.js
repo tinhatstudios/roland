@@ -5,8 +5,10 @@ const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const process = require('process');
+const chalk = require('chalk');
 const roland = require('./roland.json');
 
+const disableRobloxLogging = roland.disableRobloxLogging;
 const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
 const port = roland.port ? roland.port : 3000;
@@ -165,6 +167,31 @@ app.get('/patchList', (req, res) => {
 
   res.json(patchList);
 });
+
+if (!disableRobloxLogging) {
+  app.post('/log', (req, res) => {
+    for (const i in req.body) {
+      const log = req.body[i];
+      const msg = log.message;
+      const msgType = log.messageType;
+
+      if (msgType === 0) {
+        console.log(msg);
+      }
+      else if (msgType === 1) {
+        console.log(chalk.rgb(117, 192, 227)(msg));
+      }
+      else if (msgType === 2) {
+        console.log(chalk.rgb(255, 142, 60)(msg));
+      }
+      else if (msgType === 3) {
+        console.log(chalk.rgb(255, 68, 68)(msg));
+      }
+    }
+
+    res.status(200).send();
+  });
+}
 
 const server = http.createServer(app);
 
