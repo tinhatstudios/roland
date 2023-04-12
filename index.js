@@ -26,7 +26,7 @@ const process = require('process');
 const chalk = require('chalk');
 const roland = require('./roland.json');
 
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 const disableRobloxLogging = roland.disableRobloxLogging;
 const rootDirectory = roland.rootDirectory ? roland.rootDirectory : 'game';
 const watchedDir = path.join(process.cwd(), rootDirectory);
